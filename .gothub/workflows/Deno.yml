@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Deno modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/deno
+          key: ${{ runner.os }}-deno-${{ hashFiles('**/deno.json', '**/import_map.json') }}
+          restore-keys: |
+            ${{ runner.os }}-deno-
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      - name: fmt check
+        run: deno fmt --check
+
+      - name: lint
+        run: deno lint
+
+      - name: run tests
+        run: deno test --allow-net --allow-read
+
+  # Optional: build / package job (example: create zip artifact)
+  package:
+    needs: checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+      - name: Create zip artifact
+        run: |
+          zip -r deno-edge-cdn-${{ github.sha }}.zip . -x .git/\* .github/\*
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deno-edge-cdn-zip
+          path: deno-edge-cdn-${{ github.sha }}.zip
+
+# Optional: deploy job can be added here if you use a deploy action or CLI.
+# Keep deploy steps in a separate job that depends on checks; require a secret (e.g. DENO_DEPLOY_TOKEN).
