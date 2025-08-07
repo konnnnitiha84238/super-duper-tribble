@@ -1,20 +1,12 @@
 {
-  "fmt": {
-    "options": {
-      "lineWidth": 120
-    }
-  },
-  "lint": {
-    "rules": {
-      "tags": [
-        "recommended"
-      ]
-    }
-  },
+  "fmt": { "options": { "lineWidth": 120 } },
+  "lint": { "rules": { "tags": ["recommended"] } },
   "tasks": {
     "start": "deno run -A --watch=src mod.ts",
     "test": "deno test --allow-net --allow-read",
     "fmt": "deno fmt",
-    "lint": "deno lint"
+    "lint": "deno lint",
+    "build": "deno bundle mod.ts dist/mod.bundle.js",
+    "package": "deno task build && zip -r deno-edge-cdn-${GITHUB_SHA:-local}.zip . -x .git/* .github/*"
   }
 }
