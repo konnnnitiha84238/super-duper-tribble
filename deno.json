@@ -1,0 +1,20 @@
+{
+  "fmt": {
+    "options": {
+      "lineWidth": 120
+    }
+  },
+  "lint": {
+    "rules": {
+      "tags": [
+        "recommended"
+      ]
+    }
+  },
+  "tasks": {
+    "start": "deno run -A --watch=src mod.ts",
+    "test": "deno test --allow-net --allow-read",
+    "fmt": "deno fmt",
+    "lint": "deno lint"
+  }
+}
